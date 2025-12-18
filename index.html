@@ -252,17 +252,22 @@
   <meta name="theme-color" content="#000000"/>
   <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
   <script>
+    // OneSignal init (robuste GitHub Pages + sous-dossier)
     window.OneSignalDeferred = window.OneSignalDeferred || [];
-    window.__osReady = false;
+    window.__osInitDone = false;
+
     OneSignalDeferred.push(function(OneSignal) {
-      window.__osReady = true;
-    });
-    OneSignalDeferred.push(function(OneSignal) {
+      // base path = dossier courant (ex: /ROUE/ ou /chance/), compatible github.io/repo/
+      var basePath = new URL('.', window.location.href).pathname; // always ends with /
       OneSignal.init({
         appId: "639b5a31-e09f-4d34-ad0f-d111d66a14ac",
-        serviceWorkerPath: "sw.js",
-        serviceWorkerUpdaterPath: "sw.js",
-        serviceWorkerParam: { scope: "/" }
+        serviceWorkerPath: basePath + "sw.js",
+        serviceWorkerUpdaterPath: basePath + "sw.js",
+        serviceWorkerParam: { scope: basePath }
+      }).then(function(){
+        window.__osInitDone = true;
+      }).catch(function(){
+        // keep false
       });
     });
   </script>
@@ -652,34 +657,73 @@ wheel.onclick = spinButton.onclick;
 </script>
 
 <script>
-/* Service Worker */
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js').catch(()=>{});
-  });
-}
-
-/* OneSignal request — ONLY on spin button click, after OS ready */
 (function(){
-  function requestNotifOnce(){
+  // base path helper (supports GitHub Pages repo subpath)
+  var basePath = new URL('.', window.location.href).pathname;
+
+  // Register SW explicitly (same basePath)
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function(){
+      navigator.serviceWorker.register(basePath + 'sw.js', { scope: basePath }).catch(function(){});
+    });
+  }
+
+  function waitForOsReady(timeoutMs){
+    timeoutMs = timeoutMs || 3000;
+    var start = Date.now();
+    return new Promise(function(resolve){
+      (function tick(){
+        if (window.__osInitDone) return resolve(true);
+        if (Date.now() - start > timeoutMs) return resolve(false);
+        setTimeout(tick, 80);
+      })();
+    });
+  }
+
+  async function requestNotifOnce(){
     try{
-      if (!window.__osReady) return;
+      // If already decided, don't spam
       if (localStorage.getItem("notifAsked")) return;
+
+      // If user previously denied at browser level, Chrome won't show prompt again.
+      if (typeof Notification !== "undefined" && Notification.permission === "denied") {
+        localStorage.setItem("notifAsked","1");
+        alert("Notifications bloquées sur ce téléphone.
+
+Pour réactiver : Chrome → cadenas 🔒 → Paramètres du site → Notifications → Autoriser.");
+        return;
+      }
+
+      // Mark asked (so we don't loop)
       localStorage.setItem("notifAsked","1");
+
+      // Ensure OneSignal is initialized (important on GitHub Pages)
+      var ready = await waitForOsReady(4000);
+
+      window.OneSignalDeferred = window.OneSignalDeferred || [];
       window.OneSignalDeferred.push(async function(OneSignal){
         try{
-          await new Promise(r=>setTimeout(r,80));
+          // Small delay improves reliability right after click
+          await new Promise(r => setTimeout(r, 80));
+          // Request permission (will show prompt if allowed)
           await OneSignal.Notifications.requestPermission();
         }catch(e){}
       });
+
+      // If not ready, still try once more shortly (covers very slow loads)
+      if(!ready){
+        setTimeout(function(){
+          window.OneSignalDeferred.push(async function(OneSignal){
+            try{ await OneSignal.Notifications.requestPermission(); }catch(e){}
+          });
+        }, 600);
+      }
     }catch(e){}
   }
 
-  window.addEventListener("DOMContentLoaded", ()=>{
-    const btn = document.getElementById("spinButton");
-    if(btn){
-      btn.addEventListener("click", requestNotifOnce, true);
-    }
+  window.addEventListener("DOMContentLoaded", function(){
+    var btn = document.getElementById("spinButton");
+    if (btn) btn.addEventListener("click", requestNotifOnce, true);
   });
 })();
 </script>
