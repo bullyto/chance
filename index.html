@@ -248,24 +248,16 @@
       cursor: pointer;
     }
   </style>
-
-  <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
-  <script>
-    // OneSignal (ROUE) — App dédiée à chance.aperos.net
-    window.OneSignalDeferred = window.OneSignalDeferred || [];
-    OneSignalDeferred.push(async function(OneSignal) {
-      // basePath = dossier courant ("/" ou "/chance/")
-      var basePath = new URL('.', window.location.href).pathname;
-
-      await OneSignal.init({
-        appId: "30a45559-ffb0-43f1-a533-18aa30b3cfac",
-        notifyButton: { enable: false },
-        serviceWorkerPath: basePath + "OneSignalSDKWorker.js",
-        serviceWorkerUpdaterPath: basePath + "OneSignalSDKUpdaterWorker.js",
-        serviceWorkerParam: { scope: basePath }
-      });
+<script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+<script>
+  window.OneSignalDeferred = window.OneSignalDeferred || [];
+  OneSignalDeferred.push(async function(OneSignal) {
+    await OneSignal.init({
+      appId: "30a45559-ffb0-43f1-a533-18aa30b3cfac",
+      notifyButton: { enable: false }
     });
-  </script>
+  });
+</script>
 </head>
 <body>
   <div class="lang-flag">🇫🇷</div>
@@ -650,28 +642,22 @@ wheel.onclick = spinButton.onclick;
 })();
 </script>
 <script>
-(function(){
-  async function demanderNotifOneSignal(){
-    try{
-      if (typeof Notification !== "undefined" && Notification.permission === "denied") return;
-      if (localStorage.getItem("notifAsked")) return;
-      localStorage.setItem("notifAsked","1");
+document.addEventListener("DOMContentLoaded", () => {
+  const btn = document.getElementById("spinButton");
+  if (!btn) return;
 
+  btn.addEventListener("click", () => {
+    try {
       window.OneSignalDeferred = window.OneSignalDeferred || [];
-      OneSignalDeferred.push(async function(OneSignal){
-        try{
-          await new Promise(r => setTimeout(r, 80));
+      OneSignalDeferred.push(async function(OneSignal) {
+        try {
+          if (typeof Notification !== "undefined" && Notification.permission !== "default") return;
           await OneSignal.Notifications.requestPermission();
-        }catch(e){}
+        } catch (e) {}
       });
-    }catch(e){}
-  }
-
-  document.addEventListener("DOMContentLoaded", function(){
-    var btn = document.getElementById("spinButton"); // bouton TOURNER LA ROUE
-    if (btn) btn.addEventListener("click", demanderNotifOneSignal, true);
-  });
-})();
+    } catch (e) {}
+  }, true);
+});
 </script>
 </body>
 </html>
