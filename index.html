@@ -250,12 +250,17 @@
   </style>
 <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
 <script>
+  window.__OS = null;
+  window.__osReady = false;
   window.OneSignalDeferred = window.OneSignalDeferred || [];
-  OneSignalDeferred.push(async function(OneSignal) {
-    await OneSignal.init({
+  OneSignalDeferred.push(function(OneSignal) {
+    window.__OS = OneSignal;
+    OneSignal.init({
       appId: "30a45559-ffb0-43f1-a533-18aa30b3cfac",
       notifyButton: { enable: false }
-    });
+    }).then(function() {
+      window.__osReady = true;
+    }).catch(function(){});
   });
 </script>
 </head>
@@ -648,14 +653,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
   btn.addEventListener("click", () => {
     try {
-      window.OneSignalDeferred = window.OneSignalDeferred || [];
-      OneSignalDeferred.push(async function(OneSignal) {
-        try {
-          if (typeof Notification !== "undefined" && Notification.permission !== "default") return;
-          await OneSignal.Notifications.requestPermission();
-        } catch (e) {}
-      });
-    } catch (e) {}
+      // Chrome: if already granted/denied, no prompt
+      if (typeof Notification !== "undefined" && Notification.permission !== "default") return;
+
+      // Call requestPermission as directly as possible in the user gesture
+      if (window.__OS && window.__OS.Notifications && window.__OS.Notifications.requestPermission) {
+        window.__OS.Notifications.requestPermission();
+      } else {
+        // fallback: queue if SDK not ready yet
+        window.OneSignalDeferred = window.OneSignalDeferred || [];
+        OneSignalDeferred.push(function(OneSignal){
+          try { OneSignal.Notifications.requestPermission(); } catch(e){}
+        });
+      }
+    } catch(e) {}
   }, true);
 });
 </script>
