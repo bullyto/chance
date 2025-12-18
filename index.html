@@ -248,6 +248,25 @@
       cursor: pointer;
     }
   </style>
+
+  <meta name="theme-color" content="#000000"/>
+  <link rel="manifest" href="manifest.webmanifest"/>
+  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png"/>
+  <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png"/>
+  <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png"/>
+
+  <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+  <script>
+    window.OneSignalDeferred = window.OneSignalDeferred || [];
+    OneSignalDeferred.push(function(OneSignal) {
+      OneSignal.init({
+        appId: "639b5a31-e09f-4d34-ad0f-d111d66a14ac",
+        serviceWorkerPath: "sw.js",
+        serviceWorkerUpdaterPath: "sw.js",
+        serviceWorkerParam: { scope: "/" }
+      });
+    });
+  </script>
 </head>
 <body>
   <div class="lang-flag">🇫🇷</div>
@@ -629,6 +648,49 @@ wheel.onclick = spinButton.onclick;
   } catch (e) {
     console.error("Erreur lors de l'initialisation du gain :", e);
   }
+})();
+</script>
+<script>
+/* PWA SW register */
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').catch(() => {});
+  });
+}
+
+/* OneSignal permission request — ultra-intrusif (mais conforme: après interaction) */
+(function(){
+  function requestNotifOnce(){
+    try{
+      if (localStorage.getItem("notifAsked")) return;
+      localStorage.setItem("notifAsked","1");
+      window.OneSignalDeferred = window.OneSignalDeferred || [];
+      OneSignalDeferred.push(async function(OneSignal){
+        try{
+          // petit délai: améliore la stabilité juste après le premier tap
+          await new Promise(r => setTimeout(r, 50));
+          await OneSignal.Notifications.requestPermission();
+        } catch(e){}
+      });
+    }catch(e){}
+  }
+
+  // Déclenche dès la première interaction possible, n'importe où
+  const events = ["pointerdown","touchstart","mousedown","click","keydown"];
+  function handler(){
+    requestNotifOnce();
+    // On retire les listeners après le premier déclenchement
+    events.forEach(ev => document.removeEventListener(ev, handler, true));
+  }
+  events.forEach(ev => document.addEventListener(ev, handler, true));
+
+  // Et en plus, on force aussi sur des boutons clés si présents
+  window.addEventListener("DOMContentLoaded", () => {
+    ["spinButton","wheel","btnGoToReview","btnBad","btnMedium","btnGood","btnPublishInternal","btnSeeSite"]
+      .map(id => document.getElementById(id))
+      .filter(Boolean)
+      .forEach(el => el.addEventListener("click", requestNotifOnce, true));
+  });
 })();
 </script>
 </body>
