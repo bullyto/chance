@@ -251,22 +251,19 @@
 
   <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
   <script>
-    // OneSignal (ROUE) — appId dédié à chance.aperos.net
+    // OneSignal (ROUE) — App dédiée à chance.aperos.net
     window.OneSignalDeferred = window.OneSignalDeferred || [];
-    window.__osInitDone = false;
-
     OneSignalDeferred.push(async function(OneSignal) {
-      var basePath = new URL('.', window.location.href).pathname; // ex: "/" ou "/chance/"
+      // basePath = dossier courant ("/" ou "/chance/")
+      var basePath = new URL('.', window.location.href).pathname;
 
       await OneSignal.init({
         appId: "30a45559-ffb0-43f1-a533-18aa30b3cfac",
         notifyButton: { enable: false },
         serviceWorkerPath: basePath + "OneSignalSDKWorker.js",
-        serviceWorkerUpdaterPath: basePath + "OneSignalSDKWorker.js",
+        serviceWorkerUpdaterPath: basePath + "OneSignalSDKUpdaterWorker.js",
         serviceWorkerParam: { scope: basePath }
       });
-
-      window.__osInitDone = true;
     });
   </script>
 </head>
@@ -654,15 +651,6 @@ wheel.onclick = spinButton.onclick;
 </script>
 <script>
 (function(){
-  var basePath = new URL('.', window.location.href).pathname;
-
-  // SW minimal (facultatif)
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', function(){
-      navigator.serviceWorker.register(basePath + 'sw.js', { scope: basePath }).catch(function(){});
-    });
-  }
-
   async function demanderNotifOneSignal(){
     try{
       if (typeof Notification !== "undefined" && Notification.permission === "denied") return;
