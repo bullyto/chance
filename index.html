@@ -5,22 +5,30 @@
   <title>Roue Apéro de Nuit 66</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <!-- META pour l’aperçu quand tu partages le lien (Messenger, etc.) -->
+  
+  <!-- PWA -->
+  <link rel="manifest" href="./manifest.webmanifest">
+  <meta name="theme-color" content="#000000">
+  <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="./icon-512.png">
+  <link rel="apple-touch-icon" href="./apple-touch-icon.png">
+
+<!-- META pour l’aperçu quand tu partages le lien (Messenger, etc.) -->
   <meta property="og:type" content="website">
   <meta property="og:title" content="Roue Apéro de Nuit 66 - Gagne ton cadeau">
   <meta property="og:description" content="Laisse ton avis et tente de gagner livraison offerte, réductions ou bouteilles avec Apéro de Nuit 66.">
-  <meta property="og:image" content="https://image.noelshack.com/fichiers/2025/50/4/1765467448-image-frigo-2.jpeg">
+  <meta property="og:image" content="./share-1200x630.png">
   <!-- ⚠️ À MODIFIER : mets ici l’URL exacte de la page GitHub Pages -->
-  <meta property="og:url" content="https://TON-USER.github.io/TON-REPO/">
+  <meta property="og:url" content="./">
 
   <!-- Optionnel mais utile pour Twitter / certains clients -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Roue Apéro de Nuit 66 - Gagne ton cadeau">
   <meta name="twitter:description" content="Laisse ton avis et tente de gagner livraison offerte, réductions ou bouteilles avec Apéro de Nuit 66.">
-  <meta name="twitter:image" content="https://image.noelshack.com/fichiers/2025/50/4/1765467448-image-frigo-2.jpeg">
+  <meta name="twitter:image" content="./share-1200x630.png">
 
   <!-- Ancienne balise utilisée par certains services -->
-  <link rel="image_src" href="https://image.noelshack.com/fichiers/2025/50/4/1765467448-image-frigo-2.jpeg" />
+  <link rel="image_src" href="./share-1200x630.png" />
 
   <style>
     * { box-sizing: border-box; }
@@ -661,6 +669,16 @@ wheel.onclick = spinButton.onclick;
       } catch (e) {}
     }, true);
   });
+</script>
+
+
+<script>
+  // Enregistrement du Service Worker (PWA)
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("./sw.js").catch(() => {});
+    });
+  }
 </script>
 
 </body>
