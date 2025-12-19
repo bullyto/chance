@@ -741,7 +741,13 @@ spinButton.onclick = () => {
   }
 };
 
-wheel.onclick = spinButton.onclick;
+// Click sur la roue (fallback safe)
+if (wheel) {
+  wheel.onclick = spinButton.onclick;
+} else {
+  const wheelContainer = document.getElementById("wheel-container");
+  if (wheelContainer) wheelContainer.onclick = spinButton.onclick;
+}
 
 /* Initialisation : on regarde s'il y a déjà un gain sauvegardé */
 (function initPrizeLock() {
