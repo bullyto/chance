@@ -697,7 +697,7 @@ function spin() {
   }
   isSpinning = true;
   spinButton.disabled = true;
-  wheel.classList.add(\"spinning\");
+  wheel.classList.add("spinning");
   try{ whoosh(); }catch(e){}
   try{ startSpinSound(); }catch(e){}
 
@@ -714,7 +714,7 @@ function spin() {
   result.textContent = "La roue tourne...";
 
   setTimeout(() => {
-    wheel.classList.remove(\"spinning\");
+    wheel.classList.remove("spinning");
     try{ stopSpinSound(); }catch(e){}
     try{ thump(); }catch(e){}
     result.textContent = "🎁 Tu as gagné : " + prizeName + " !";
