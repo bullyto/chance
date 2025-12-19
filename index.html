@@ -5,30 +5,22 @@
   <title>Roue Apéro de Nuit 66</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  
-  <!-- PWA -->
-  <link rel="manifest" href="./manifest.webmanifest">
-  <meta name="theme-color" content="#000000">
-  <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
-  <link rel="icon" type="image/png" sizes="512x512" href="./icon-512.png">
-  <link rel="apple-touch-icon" href="./apple-touch-icon.png">
-
-<!-- META pour l’aperçu quand tu partages le lien (Messenger, etc.) -->
+  <!-- META pour l’aperçu quand tu partages le lien (Messenger, etc.) -->
   <meta property="og:type" content="website">
   <meta property="og:title" content="Roue Apéro de Nuit 66 - Gagne ton cadeau">
   <meta property="og:description" content="Laisse ton avis et tente de gagner livraison offerte, réductions ou bouteilles avec Apéro de Nuit 66.">
-  <meta property="og:image" content="./share-1200x630.png">
+  <meta property="og:image" content="https://image.noelshack.com/fichiers/2025/50/4/1765467448-image-frigo-2.jpeg">
   <!-- ⚠️ À MODIFIER : mets ici l’URL exacte de la page GitHub Pages -->
-  <meta property="og:url" content="./">
+  <meta property="og:url" content="https://TON-USER.github.io/TON-REPO/">
 
   <!-- Optionnel mais utile pour Twitter / certains clients -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Roue Apéro de Nuit 66 - Gagne ton cadeau">
   <meta name="twitter:description" content="Laisse ton avis et tente de gagner livraison offerte, réductions ou bouteilles avec Apéro de Nuit 66.">
-  <meta name="twitter:image" content="./share-1200x630.png">
+  <meta name="twitter:image" content="https://image.noelshack.com/fichiers/2025/50/4/1765467448-image-frigo-2.jpeg">
 
   <!-- Ancienne balise utilisée par certains services -->
-  <link rel="image_src" href="./share-1200x630.png" />
+  <link rel="image_src" href="https://image.noelshack.com/fichiers/2025/50/4/1765467448-image-frigo-2.jpeg" />
 
   <style>
     * { box-sizing: border-box; }
@@ -255,7 +247,48 @@
       font-weight: 600;
       cursor: pointer;
     }
-  </style>
+  
+/* =====================================================
+   IMMERSIVE FX (win popup): glow + light sweep + confetti
+   Added without removing any existing logic.
+   ===================================================== */
+@keyframes fxGlowPulse {
+  0%   { box-shadow: 0 0 10px rgba(0,255,204,.35), 0 0 0 rgba(0,0,0,0); transform: translateZ(0) scale(1); }
+  50%  { box-shadow: 0 0 24px rgba(0,255,204,.55), 0 0 60px rgba(0,255,204,.25); transform: translateZ(0) scale(1.01); }
+  100% { box-shadow: 0 0 10px rgba(0,255,204,.35), 0 0 0 rgba(0,0,0,0); transform: translateZ(0) scale(1); }
+}
+@keyframes fxLightSweep {
+  0%   { transform: translateX(-140%) rotate(14deg); opacity: 0; }
+  15%  { opacity: .55; }
+  100% { transform: translateX(140%) rotate(14deg); opacity: 0; }
+}
+.fx-win-glow {
+  animation: fxGlowPulse 1.35s ease-in-out infinite;
+}
+/* light sweep overlay */
+.prize-card { position: relative; overflow: hidden; }
+.prize-card.fx-win-sweep::after{
+  content:"";
+  position:absolute;
+  top:-30%;
+  left:-60%;
+  width: 55%;
+  height: 160%;
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,.55) 50%, transparent 100%);
+  filter: blur(1px);
+  animation: fxLightSweep 1.15s ease-out 1;
+  pointer-events:none;
+}
+#fxConfettiCanvas{
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 999999; /* above overlays */
+}
+
+</style>
 <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
 <script>
   window.OneSignalDeferred = window.OneSignalDeferred || [];
@@ -487,6 +520,10 @@ function showPrizePopup(prizeName, storedData) {
   prizeDates.textContent = "Du " + formatDateFr(start) + " au " + formatDateFr(end);
   prizeOverlay.style.display = "flex";
 
+  // FX immersifs: plein effet pour un gain nouveau, soft si gain déjà enregistré
+  try { window.triggerWinFX({ mode: storedData ? "soft" : "full" }); } catch(e) {}
+
+
   if (lockUntil) {
     result.textContent = "🎁 Tu as déjà joué. Tu pourras rejouer après le " + formatDateFr(lockUntil) + ".";
   }
@@ -673,12 +710,223 @@ wheel.onclick = spinButton.onclick;
 
 
 <script>
-  // Enregistrement du Service Worker (PWA)
-  if ("serviceWorker" in navigator) {
-    window.addEventListener("load", () => {
-      navigator.serviceWorker.register("./sw.js").catch(() => {});
-    });
+/* =====================================================
+   IMMERSIVE FX (win popup)
+   - Confetti burst (canvas)
+   - Premium "win" sound (WebAudio, no external file)
+   - Optional haptics on mobile
+   Triggered by calling: window.triggerWinFX({mode:"full"|"soft"})
+   ===================================================== */
+(function(){
+  const FX = {
+    canvas: null,
+    ctx: null,
+    particles: [],
+    raf: null,
+    lastT: 0,
+    running: false
+  };
+
+  function ensureCanvas(){
+    if (FX.canvas) return;
+    const c = document.createElement("canvas");
+    c.id = "fxConfettiCanvas";
+    document.body.appendChild(c);
+    FX.canvas = c;
+    FX.ctx = c.getContext("2d", { alpha: true });
+    resizeCanvas();
+    window.addEventListener("resize", resizeCanvas);
   }
+  function resizeCanvas(){
+    if (!FX.canvas) return;
+    FX.canvas.width = Math.floor(window.innerWidth * (window.devicePixelRatio || 1));
+    FX.canvas.height = Math.floor(window.innerHeight * (window.devicePixelRatio || 1));
+    FX.canvas.style.width = "100%";
+    FX.canvas.style.height = "100%";
+    FX.ctx.setTransform((window.devicePixelRatio||1),0,0,(window.devicePixelRatio||1),0,0);
+  }
+
+  function rand(min,max){ return Math.random()*(max-min)+min; }
+  function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+
+  function burstConfetti(opts){
+    ensureCanvas();
+    const mode = (opts && opts.mode) || "full";
+    const count = mode === "soft" ? 70 : 160;
+    const gravity = mode === "soft" ? 700 : 980; // px/s^2
+    const drag = 0.12;
+    const spread = mode === "soft" ? 0.85 : 1.0;
+
+    const w = window.innerWidth;
+    const h = window.innerHeight;
+
+    // Spawn from near center-top of the prize popup area (approx)
+    const originX = w * 0.5;
+    const originY = h * 0.25;
+
+    const colors = [
+      [0,255,204], [255,220,0], [255,80,140], [120,200,255], [255,140,40], [180,255,120]
+    ];
+
+    for(let i=0;i<count;i++){
+      const rgb = pick(colors);
+      FX.particles.push({
+        x: originX + rand(-40,40),
+        y: originY + rand(-10,10),
+        vx: rand(-340,340) * spread,
+        vy: rand(-520,-160) * spread,
+        r: rand(2.2, 4.8),
+        w: rand(6, 14),
+        h: rand(3, 8),
+        rot: rand(0, Math.PI*2),
+        vr: rand(-8, 8),
+        life: rand(0.85, 1.35),
+        age: 0,
+        g: gravity,
+        c: `rgba(${rgb[0]},${rgb[1]},${rgb[2]},`,
+      });
+    }
+    startLoop();
+  }
+
+  function startLoop(){
+    if (FX.running) return;
+    FX.running = true;
+    FX.lastT = performance.now();
+    FX.raf = requestAnimationFrame(tick);
+  }
+
+  function tick(t){
+    const dt = Math.min(0.033, (t - FX.lastT) / 1000);
+    FX.lastT = t;
+
+    const ctx = FX.ctx;
+    if (!ctx || !FX.canvas) return stopLoop();
+
+    ctx.clearRect(0,0,window.innerWidth,window.innerHeight);
+
+    // update & draw
+    for(let i=FX.particles.length-1;i>=0;i--){
+      const p = FX.particles[i];
+      p.age += dt;
+      p.vx *= (1 - 0.12*dt);
+      p.vy += p.g * dt;
+      p.x += p.vx * dt;
+      p.y += p.vy * dt;
+      p.rot += p.vr * dt;
+
+      const alpha = Math.max(0, 1 - (p.age / p.life));
+      if (alpha <= 0 || p.y > window.innerHeight + 80) {
+        FX.particles.splice(i,1);
+        continue;
+      }
+
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rot);
+      ctx.fillStyle = p.c + (0.85*alpha).toFixed(3) + ")";
+      ctx.fillRect(-p.w/2, -p.h/2, p.w, p.h);
+      ctx.restore();
+    }
+
+    if (FX.particles.length === 0){
+      stopLoop();
+      return;
+    }
+    FX.raf = requestAnimationFrame(tick);
+  }
+
+  function stopLoop(){
+    FX.running = false;
+    if (FX.raf) cancelAnimationFrame(FX.raf);
+    FX.raf = null;
+    if (FX.ctx) FX.ctx.clearRect(0,0,window.innerWidth,window.innerHeight);
+  }
+
+  function playWinSound(opts){
+    // WebAudio needs user gesture; here we're called from a click-driven flow (spin).
+    const mode = (opts && opts.mode) || "full";
+    const A = window.AudioContext || window.webkitAudioContext;
+    if (!A) return;
+
+    const ac = new A();
+
+    const now = ac.currentTime;
+    const master = ac.createGain();
+    master.gain.setValueAtTime(mode==="soft" ? 0.18 : 0.26, now);
+    master.connect(ac.destination);
+
+    // A short "sparkle" chord (pleasant, not too loud)
+    const freqs = mode==="soft" ? [660, 990] : [660, 880, 1320];
+    freqs.forEach((f, idx)=>{
+      const o = ac.createOscillator();
+      const g = ac.createGain();
+      o.type = "triangle";
+      o.frequency.setValueAtTime(f, now);
+      // tiny pitch slide up
+      o.frequency.exponentialRampToValueAtTime(f*1.06, now + 0.12);
+
+      g.gain.setValueAtTime(0.0001, now);
+      g.gain.exponentialRampToValueAtTime(0.22/(idx+1), now + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.0001, now + (mode==="soft" ? 0.42 : 0.55));
+
+      o.connect(g);
+      g.connect(master);
+      o.start(now);
+      o.stop(now + (mode==="soft" ? 0.45 : 0.6));
+    });
+
+    // tiny noise "tss" (very subtle)
+    try{
+      const bufferSize = ac.sampleRate * 0.08;
+      const buffer = ac.createBuffer(1, bufferSize, ac.sampleRate);
+      const out = buffer.getChannelData(0);
+      for (let i=0;i<bufferSize;i++) out[i] = (Math.random()*2-1) * 0.18;
+      const noise = ac.createBufferSource();
+      noise.buffer = buffer;
+
+      const nf = ac.createBiquadFilter();
+      nf.type = "highpass";
+      nf.frequency.value = 2000;
+
+      const ng = ac.createGain();
+      ng.gain.setValueAtTime(0.0001, now);
+      ng.gain.exponentialRampToValueAtTime(mode==="soft" ? 0.03 : 0.05, now + 0.01);
+      ng.gain.exponentialRampToValueAtTime(0.0001, now + 0.12);
+
+      noise.connect(nf); nf.connect(ng); ng.connect(master);
+      noise.start(now);
+      noise.stop(now + 0.13);
+    }catch(e){}
+  }
+
+  function haptic(opts){
+    const mode = (opts && opts.mode) || "full";
+    if (!("vibrate" in navigator)) return;
+    // short & classy
+    navigator.vibrate(mode==="soft" ? [18, 18, 18] : [22, 30, 22, 40, 28]);
+  }
+
+  function decoratePrizeCard(){
+    const card = document.querySelector("#prizeOverlay .prize-card");
+    if (!card) return;
+    card.classList.remove("fx-win-glow","fx-win-sweep");
+    // reflow to replay sweep animation
+    void card.offsetWidth;
+    card.classList.add("fx-win-glow","fx-win-sweep");
+    // stop glow after a bit (keep classy)
+    setTimeout(()=>{
+      card.classList.remove("fx-win-glow");
+    }, 5200);
+  }
+
+  window.triggerWinFX = function(opts){
+    decoratePrizeCard();
+    burstConfetti(opts);
+    playWinSound(opts);
+    haptic(opts);
+  };
+})();
 </script>
 
 </body>
