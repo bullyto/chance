@@ -248,44 +248,94 @@
       cursor: pointer;
     }
   
-/* =====================================================
-   IMMERSIVE FX (win popup): glow + light sweep + confetti
-   Added without removing any existing logic.
-   ===================================================== */
-@keyframes fxGlowPulse {
-  0%   { box-shadow: 0 0 10px rgba(0,255,204,.35), 0 0 0 rgba(0,0,0,0); transform: translateZ(0) scale(1); }
-  50%  { box-shadow: 0 0 24px rgba(0,255,204,.55), 0 0 60px rgba(0,255,204,.25); transform: translateZ(0) scale(1.01); }
-  100% { box-shadow: 0 0 10px rgba(0,255,204,.35), 0 0 0 rgba(0,0,0,0); transform: translateZ(0) scale(1); }
+/* Prize popup FX (scoped) */
+#prizeOverlay.fx-on .fx-aura{animation: auraPop 1.4s ease-out forwards;}
+#prizeOverlay.fx-on .fx-rays{animation: raysPop 1.4s ease-out forwards, raysSpin 7s linear infinite;}
+#prizeOverlay.fx-on .fx-shadow{animation: shadowBounce 1.4s ease-out forwards;}
+#prizeOverlay.fx-on .fx-icon{animation: dropBounce 1.4s ease-out forwards;}
+#prizeOverlay.fx-on .fx-tip{animation: tipIn 1.4s ease-out forwards;}
+#prizeOverlay.fx-on .fx-spark{animation: spark 1.4s ease-out forwards;}
+
+#prizeOverlay .prize-stage{position:relative;width:100%;height:260px;display:grid;place-items:center;margin:0 0 10px;}
+#prizeOverlay .prize-badge{position:absolute;top:10px;left:10px;padding:8px 10px;font-size:12px;color:rgba(255,255,255,.85);background:rgba(0,0,0,.28);border:1px solid rgba(255,255,255,.18);border-radius:999px;backdrop-filter:blur(10px);}
+#prizeOverlay .fx-aura{position:absolute;width:260px;height:260px;border-radius:50%;background:radial-gradient(circle at 50% 50%,rgba(255,210,120,.90) 0%,rgba(255,170,0,.55) 18%,rgba(255,80,0,.20) 38%,rgba(255,80,0,0) 70%);filter:blur(6px);opacity:0;transform:translateY(14px) scale(.75);pointer-events:none;}
+#prizeOverlay .fx-rays{position:absolute;width:300px;height:300px;border-radius:50%;opacity:0;transform:translateY(14px) scale(.75) rotate(0deg);background:repeating-conic-gradient(from 0deg,rgba(255,210,120,.22) 0deg 10deg,rgba(255,210,120,0) 10deg 22deg);mask:radial-gradient(circle at 50% 50%,transparent 0 38%,#000 55%,transparent 76%);filter:blur(.5px);pointer-events:none;}
+#prizeOverlay .fx-spark{position:absolute;width:6px;height:6px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,1),rgba(255,255,255,0));opacity:0;filter:drop-shadow(0 0 10px rgba(255,210,120,.9));pointer-events:none;}
+#prizeOverlay .fx-shadow{position:absolute;bottom:54px;width:90px;height:18px;border-radius:50%;background:rgba(0,0,0,.45);filter:blur(4px);transform:scale(0);opacity:0;pointer-events:none;}
+#prizeOverlay .fx-icon{position:relative;font-size:92px;transform-origin:bottom center;opacity:0;filter:drop-shadow(0 10px 18px rgba(0,0,0,.55)) drop-shadow(0 0 0 rgba(255,210,120,0));z-index:5;}
+#prizeOverlay .fx-tip{position:absolute;bottom:10px;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.7);opacity:0;}
+#prizeOverlay .fx-spark.s1{ left:40px;  top:120px; animation-delay:.35s;}
+#prizeOverlay .fx-spark.s2{ left:80px;  top:70px;  animation-delay:.38s;}
+#prizeOverlay .fx-spark.s3{ left:140px; top:40px;  animation-delay:.40s;}
+#prizeOverlay .fx-spark.s4{ left:210px; top:55px;  animation-delay:.42s;}
+#prizeOverlay .fx-spark.s5{ left:255px; top:100px; animation-delay:.45s;}
+#prizeOverlay .fx-spark.s6{ left:265px; top:160px; animation-delay:.48s;}
+#prizeOverlay .fx-spark.s7{ left:230px; top:210px; animation-delay:.50s;}
+#prizeOverlay .fx-spark.s8{ left:150px; top:235px; animation-delay:.52s;}
+#prizeOverlay .fx-spark.s9{ left:75px;  top:210px; animation-delay:.54s;}
+#prizeOverlay .fx-spark.s10{left:35px;  top:170px; animation-delay:.56s;}
+
+@keyframes dropBounce{0%{transform:translateY(-340px) scaleY(1);opacity:0;filter:drop-shadow(0 10px 18px rgba(0,0,0,.55));}28%{opacity:1;}40%{transform:translateY(0) scaleY(.70);filter:drop-shadow(0 10px 18px rgba(0,0,0,.55)) drop-shadow(0 0 28px rgba(255,210,120,.55));}55%{transform:translateY(-48px) scaleY(1.05);}70%{transform:translateY(0) scaleY(.84);}82%{transform:translateY(-16px) scaleY(1.02);}92%{transform:translateY(0) scaleY(.95);}100%{transform:translateY(0) scaleY(1);opacity:1;filter:drop-shadow(0 10px 18px rgba(0,0,0,.55)) drop-shadow(0 0 36px rgba(255,210,120,.65));}}
+@keyframes auraPop{0%{opacity:0;transform:translateY(18px) scale(.70);}35%{opacity:.95;transform:translateY(10px) scale(.95);}55%{opacity:1;transform:translateY(6px) scale(1);}100%{opacity:.85;transform:translateY(6px) scale(1.04);}}
+@keyframes raysPop{0%{opacity:0;transform:translateY(18px) scale(.70) rotate(0deg);}45%{opacity:.85;transform:translateY(10px) scale(.98) rotate(0deg);}100%{opacity:.55;transform:translateY(10px) scale(1.06) rotate(0deg);}}
+@keyframes raysSpin{to{transform:translateY(10px) scale(1.06) rotate(360deg);}}
+@keyframes shadowBounce{0%{transform:scale(0);opacity:0;}35%{transform:scale(.25);opacity:0;}40%{transform:scale(1);opacity:.9;}55%{transform:scale(.78);opacity:.55;}70%{transform:scale(.96);opacity:.70;}100%{transform:scale(.90);opacity:.55;}}
+@keyframes spark{0%{opacity:0;transform:scale(.4);}45%{opacity:0;transform:scale(.4);}60%{opacity:1;transform:scale(1.35);}80%{opacity:.9;transform:scale(.95);}100%{opacity:0;transform:scale(1.6);}}
+@keyframes tipIn{0%{opacity:0;transform:translateY(6px);}65%{opacity:0;transform:translateY(6px);}100%{opacity:.85;transform:translateY(0);}}
+
+/* Wheel glow while spinning (visual only) */
+#wheel{position:relative}
+#wheel.spinning{filter:drop-shadow(0 0 28px rgba(255,215,0,.65)) drop-shadow(0 0 40px rgba(0,198,255,.25));}
+#wheel.spinning::after{content:"";position:absolute;inset:-14px;border-radius:50%;background:radial-gradient(circle at 50% 50%,rgba(255,210,120,.18) 0%,rgba(255,120,0,.10) 35%,rgba(255,120,0,0) 70%);filter:blur(2px);animation:wheelPulse .55s ease-in-out infinite alternate;pointer-events:none;}
+@keyframes wheelPulse{from{transform:scale(.98);opacity:.7}to{transform:scale(1.03);opacity:1}}
+
+
+
+/* ===== Bulb chase FX around wheel (visual only) ===== */
+#wheel-container{position:relative}
+#wheel-container .bulbs{
+  position:absolute;
+  inset:-12px;
+  pointer-events:none;
+  z-index:3;
 }
-@keyframes fxLightSweep {
-  0%   { transform: translateX(-140%) rotate(14deg); opacity: 0; }
-  15%  { opacity: .55; }
-  100% { transform: translateX(140%) rotate(14deg); opacity: 0; }
+#wheel-container .bulbs i{
+  position:absolute;
+  width:10px; height:10px;
+  border-radius:50%;
+  background: rgba(255,215,0,.35);
+  box-shadow: 0 0 10px rgba(255,215,0,.20);
+  opacity:.45;
+  transform: translate(-50%,-50%);
 }
-.fx-win-glow {
-  animation: fxGlowPulse 1.35s ease-in-out infinite;
+#wheel-container.spinning .bulbs i{
+  animation: bulbChase 0.9s linear infinite;
+  opacity:1;
 }
-/* light sweep overlay */
-.prize-card { position: relative; overflow: hidden; }
-.prize-card.fx-win-sweep::after{
+@keyframes bulbChase{
+  0%,100%{ filter: brightness(1); box-shadow: 0 0 10px rgba(255,215,0,.25); opacity:.55; }
+  50%{ filter: brightness(2.2); box-shadow: 0 0 22px rgba(255,215,0,.75), 0 0 40px rgba(255,160,0,.35); opacity:1; }
+}
+/* soft backlight behind wheel while spinning */
+#wheel-container::before{
   content:"";
   position:absolute;
-  top:-30%;
-  left:-60%;
-  width: 55%;
-  height: 160%;
-  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,.55) 50%, transparent 100%);
-  filter: blur(1px);
-  animation: fxLightSweep 1.15s ease-out 1;
+  inset:-24px;
+  border-radius:50%;
+  background: radial-gradient(circle at 50% 50%,
+    rgba(255,210,120,.18) 0%,
+    rgba(0,198,255,.10) 35%,
+    rgba(0,0,0,0) 70%);
+  filter: blur(6px);
+  opacity:0;
+  transform: scale(.92);
+  transition: opacity .2s ease, transform .2s ease;
   pointer-events:none;
+  z-index:1;
 }
-#fxConfettiCanvas{
-  position: fixed;
-  inset: 0;
-  width: 100vw;
-  height: 100vh;
-  pointer-events: none;
-  z-index: 999999; /* above overlays */
+#wheel-container.spinning::before{
+  opacity:1;
+  transform: scale(1.00);
 }
 
 </style>
@@ -370,6 +420,17 @@
   <!-- POPUP GAIN -->
   <div id="prizeOverlay" class="overlay" style="background:rgba(0,0,0,0.65);">
     <div class="card prize-card">
+      <div class="prize-stage" aria-hidden="true">
+        <div class="prize-badge">Gain obtenu ✨</div>
+        <div class="fx-aura"></div>
+        <div class="fx-rays"></div>
+        <div class="fx-spark s1"></div><div class="fx-spark s2"></div><div class="fx-spark s3"></div><div class="fx-spark s4"></div><div class="fx-spark s5"></div>
+        <div class="fx-spark s6"></div><div class="fx-spark s7"></div><div class="fx-spark s8"></div><div class="fx-spark s9"></div><div class="fx-spark s10"></div>
+        <div class="fx-shadow"></div>
+        <div id="prizeIcon" class="fx-icon">🎁</div>
+        <div class="fx-tip">Incroyable apparition</div>
+      </div>
+
       <h2 id="prizeTitle" class="prize-title"></h2>
       <p id="prizeText" class="prize-text"></p>
       <div id="prizeCode" class="prize-code"></div>
@@ -395,9 +456,9 @@ const segments = [
 
 const prizeWeights = {
   "iPhone 16": 0,
-  "-10%": 40,
-  "Livraison offerte": 40,
-  "-50%": 15,
+  "-10%": 20,
+  "Livraison offerte": 50,
+  "-50%": 25,
   "Une bouteille de Poliakov": 2
 };
 
@@ -518,11 +579,13 @@ function showPrizePopup(prizeName, storedData) {
   }
 
   prizeDates.textContent = "Du " + formatDateFr(start) + " au " + formatDateFr(end);
+  prizeOverlay.classList.remove("fx-on");
+  void prizeOverlay.offsetWidth;
+  prizeOverlay.classList.add("fx-on");
+  const _ic = document.getElementById("prizeIcon");
+  if (_ic) _ic.textContent = prizeIconFor(prizeName);
+  try{ bling(); }catch(e){}
   prizeOverlay.style.display = "flex";
-
-  // FX immersifs: plein effet pour un gain nouveau, soft si gain déjà enregistré
-  try { window.triggerWinFX({ mode: storedData ? "soft" : "full" }); } catch(e) {}
-
 
   if (lockUntil) {
     result.textContent = "🎁 Tu as déjà joué. Tu pourras rejouer après le " + formatDateFr(lockUntil) + ".";
@@ -555,8 +618,22 @@ document.getElementById("btnBad").onclick = () => {
 };
 
 document.getElementById("btnMedium").onclick = () => {
+  
+  // Moyen -> Google Avis (comme Excellent)
+  window.open("https://g.page/r/CeR1XkHseNX9EBM/review", "_blank");
   reviewOverlay.style.display = "none";
-  starOverlay.style.display = "flex";
+
+  // Déverrouillage après quelques secondes (comme Excellent)
+  spinButton.disabled = true;
+  result.textContent = "";
+  setTimeout(() => {
+    if (!isLockedFromPrize) {
+      canSpin = true;
+      spinButton.disabled = false;
+      result.textContent = "✅ Tu peux maintenant tourner la roue.";
+    }
+  }, 10000);
+
 };
 
 document.getElementById("btnGood").onclick = () => {
@@ -620,6 +697,9 @@ function spin() {
   }
   isSpinning = true;
   spinButton.disabled = true;
+  wheel.classList.add(\"spinning\");
+  try{ whoosh(); }catch(e){}
+  try{ startSpinSound(); }catch(e){}
 
   const targetIndex = randomWeighted();
   const prizeName = segments[targetIndex];
@@ -634,6 +714,9 @@ function spin() {
   result.textContent = "La roue tourne...";
 
   setTimeout(() => {
+    wheel.classList.remove(\"spinning\");
+    try{ stopSpinSound(); }catch(e){}
+    try{ thump(); }catch(e){}
     result.textContent = "🎁 Tu as gagné : " + prizeName + " !";
     setTimeout(() => {
       showPrizePopup(prizeName);
@@ -706,227 +789,50 @@ wheel.onclick = spinButton.onclick;
       } catch (e) {}
     }, true);
   });
-</script>
 
 
-<script>
-/* =====================================================
-   IMMERSIVE FX (win popup)
-   - Confetti burst (canvas)
-   - Premium "win" sound (WebAudio, no external file)
-   - Optional haptics on mobile
-   Triggered by calling: window.triggerWinFX({mode:"full"|"soft"})
-   ===================================================== */
-(function(){
-  const FX = {
-    canvas: null,
-    ctx: null,
-    particles: [],
-    raf: null,
-    lastT: 0,
-    running: false
-  };
+/* --- Extra immersive sounds (safe) --- */
+let _spinTickTimer=null;
+function startSpinSound(){
+  try{ ensureAudio(); }catch(e){ return; }
+  stopSpinSound();
+  _spinTickTimer=setInterval(()=>{ try{ noiseBurst(0.02,0.05,500,6000); }catch(e){} }, 90);
+}
+function stopSpinSound(){
+  if(_spinTickTimer){ clearInterval(_spinTickTimer); _spinTickTimer=null; }
+}
+function prizeIconFor(prizeName){
+  const n=(prizeName||"").toLowerCase();
+  if(n.includes("50")) return "🤑";
+  if(n.includes("10")) return "✨";
+  if(n.includes("livraison")) return "🚚";
+  if(n.includes("poliakov")||n.includes("bouteille")) return "🍾";
+  if(n.includes("iphone")) return "📱";
+  return "🎁";
+}
 
-  function ensureCanvas(){
-    if (FX.canvas) return;
-    const c = document.createElement("canvas");
-    c.id = "fxConfettiCanvas";
-    document.body.appendChild(c);
-    FX.canvas = c;
-    FX.ctx = c.getContext("2d", { alpha: true });
-    resizeCanvas();
-    window.addEventListener("resize", resizeCanvas);
+
+
+/* ===== Build bulbs + staggered chase ===== */
+(function initBulbs(){
+  const container = document.getElementById("wheel-container");
+  const bulbsHost = container ? container.querySelector(".bulbs") : null;
+  if (!container || !bulbsHost) return;
+
+  const count = 18;
+  bulbsHost.innerHTML = "";
+  for (let k=0;k<count;k++){
+    const a = (Math.PI*2) * (k/count) - Math.PI/2;
+    const x = 50 + (Math.cos(a) * 44);
+    const y = 50 + (Math.sin(a) * 44);
+    const b = document.createElement("i");
+    b.style.left = x + "%";
+    b.style.top  = y + "%";
+    b.style.animationDelay = (k * (0.9 / count)) + "s";
+    bulbsHost.appendChild(b);
   }
-  function resizeCanvas(){
-    if (!FX.canvas) return;
-    FX.canvas.width = Math.floor(window.innerWidth * (window.devicePixelRatio || 1));
-    FX.canvas.height = Math.floor(window.innerHeight * (window.devicePixelRatio || 1));
-    FX.canvas.style.width = "100%";
-    FX.canvas.style.height = "100%";
-    FX.ctx.setTransform((window.devicePixelRatio||1),0,0,(window.devicePixelRatio||1),0,0);
-  }
-
-  function rand(min,max){ return Math.random()*(max-min)+min; }
-  function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
-
-  function burstConfetti(opts){
-    ensureCanvas();
-    const mode = (opts && opts.mode) || "full";
-    const count = mode === "soft" ? 70 : 160;
-    const gravity = mode === "soft" ? 700 : 980; // px/s^2
-    const drag = 0.12;
-    const spread = mode === "soft" ? 0.85 : 1.0;
-
-    const w = window.innerWidth;
-    const h = window.innerHeight;
-
-    // Spawn from near center-top of the prize popup area (approx)
-    const originX = w * 0.5;
-    const originY = h * 0.25;
-
-    const colors = [
-      [0,255,204], [255,220,0], [255,80,140], [120,200,255], [255,140,40], [180,255,120]
-    ];
-
-    for(let i=0;i<count;i++){
-      const rgb = pick(colors);
-      FX.particles.push({
-        x: originX + rand(-40,40),
-        y: originY + rand(-10,10),
-        vx: rand(-340,340) * spread,
-        vy: rand(-520,-160) * spread,
-        r: rand(2.2, 4.8),
-        w: rand(6, 14),
-        h: rand(3, 8),
-        rot: rand(0, Math.PI*2),
-        vr: rand(-8, 8),
-        life: rand(0.85, 1.35),
-        age: 0,
-        g: gravity,
-        c: `rgba(${rgb[0]},${rgb[1]},${rgb[2]},`,
-      });
-    }
-    startLoop();
-  }
-
-  function startLoop(){
-    if (FX.running) return;
-    FX.running = true;
-    FX.lastT = performance.now();
-    FX.raf = requestAnimationFrame(tick);
-  }
-
-  function tick(t){
-    const dt = Math.min(0.033, (t - FX.lastT) / 1000);
-    FX.lastT = t;
-
-    const ctx = FX.ctx;
-    if (!ctx || !FX.canvas) return stopLoop();
-
-    ctx.clearRect(0,0,window.innerWidth,window.innerHeight);
-
-    // update & draw
-    for(let i=FX.particles.length-1;i>=0;i--){
-      const p = FX.particles[i];
-      p.age += dt;
-      p.vx *= (1 - 0.12*dt);
-      p.vy += p.g * dt;
-      p.x += p.vx * dt;
-      p.y += p.vy * dt;
-      p.rot += p.vr * dt;
-
-      const alpha = Math.max(0, 1 - (p.age / p.life));
-      if (alpha <= 0 || p.y > window.innerHeight + 80) {
-        FX.particles.splice(i,1);
-        continue;
-      }
-
-      ctx.save();
-      ctx.translate(p.x, p.y);
-      ctx.rotate(p.rot);
-      ctx.fillStyle = p.c + (0.85*alpha).toFixed(3) + ")";
-      ctx.fillRect(-p.w/2, -p.h/2, p.w, p.h);
-      ctx.restore();
-    }
-
-    if (FX.particles.length === 0){
-      stopLoop();
-      return;
-    }
-    FX.raf = requestAnimationFrame(tick);
-  }
-
-  function stopLoop(){
-    FX.running = false;
-    if (FX.raf) cancelAnimationFrame(FX.raf);
-    FX.raf = null;
-    if (FX.ctx) FX.ctx.clearRect(0,0,window.innerWidth,window.innerHeight);
-  }
-
-  function playWinSound(opts){
-    // WebAudio needs user gesture; here we're called from a click-driven flow (spin).
-    const mode = (opts && opts.mode) || "full";
-    const A = window.AudioContext || window.webkitAudioContext;
-    if (!A) return;
-
-    const ac = new A();
-
-    const now = ac.currentTime;
-    const master = ac.createGain();
-    master.gain.setValueAtTime(mode==="soft" ? 0.18 : 0.26, now);
-    master.connect(ac.destination);
-
-    // A short "sparkle" chord (pleasant, not too loud)
-    const freqs = mode==="soft" ? [660, 990] : [660, 880, 1320];
-    freqs.forEach((f, idx)=>{
-      const o = ac.createOscillator();
-      const g = ac.createGain();
-      o.type = "triangle";
-      o.frequency.setValueAtTime(f, now);
-      // tiny pitch slide up
-      o.frequency.exponentialRampToValueAtTime(f*1.06, now + 0.12);
-
-      g.gain.setValueAtTime(0.0001, now);
-      g.gain.exponentialRampToValueAtTime(0.22/(idx+1), now + 0.02);
-      g.gain.exponentialRampToValueAtTime(0.0001, now + (mode==="soft" ? 0.42 : 0.55));
-
-      o.connect(g);
-      g.connect(master);
-      o.start(now);
-      o.stop(now + (mode==="soft" ? 0.45 : 0.6));
-    });
-
-    // tiny noise "tss" (very subtle)
-    try{
-      const bufferSize = ac.sampleRate * 0.08;
-      const buffer = ac.createBuffer(1, bufferSize, ac.sampleRate);
-      const out = buffer.getChannelData(0);
-      for (let i=0;i<bufferSize;i++) out[i] = (Math.random()*2-1) * 0.18;
-      const noise = ac.createBufferSource();
-      noise.buffer = buffer;
-
-      const nf = ac.createBiquadFilter();
-      nf.type = "highpass";
-      nf.frequency.value = 2000;
-
-      const ng = ac.createGain();
-      ng.gain.setValueAtTime(0.0001, now);
-      ng.gain.exponentialRampToValueAtTime(mode==="soft" ? 0.03 : 0.05, now + 0.01);
-      ng.gain.exponentialRampToValueAtTime(0.0001, now + 0.12);
-
-      noise.connect(nf); nf.connect(ng); ng.connect(master);
-      noise.start(now);
-      noise.stop(now + 0.13);
-    }catch(e){}
-  }
-
-  function haptic(opts){
-    const mode = (opts && opts.mode) || "full";
-    if (!("vibrate" in navigator)) return;
-    // short & classy
-    navigator.vibrate(mode==="soft" ? [18, 18, 18] : [22, 30, 22, 40, 28]);
-  }
-
-  function decoratePrizeCard(){
-    const card = document.querySelector("#prizeOverlay .prize-card");
-    if (!card) return;
-    card.classList.remove("fx-win-glow","fx-win-sweep");
-    // reflow to replay sweep animation
-    void card.offsetWidth;
-    card.classList.add("fx-win-glow","fx-win-sweep");
-    // stop glow after a bit (keep classy)
-    setTimeout(()=>{
-      card.classList.remove("fx-win-glow");
-    }, 5200);
-  }
-
-  window.triggerWinFX = function(opts){
-    decoratePrizeCard();
-    burstConfetti(opts);
-    playWinSound(opts);
-    haptic(opts);
-  };
 })();
+
 </script>
 
 </body>
