@@ -247,115 +247,113 @@
       font-weight: 600;
       cursor: pointer;
     }
-  
-/* Prize popup FX (scoped) */
-#prizeOverlay.fx-on .fx-aura{animation: auraPop 1.4s ease-out forwards;}
-#prizeOverlay.fx-on .fx-rays{animation: raysPop 1.4s ease-out forwards, raysSpin 7s linear infinite;}
-#prizeOverlay.fx-on .fx-shadow{animation: shadowBounce 1.4s ease-out forwards;}
-#prizeOverlay.fx-on .fx-icon{animation: dropBounce 1.4s ease-out forwards;}
-#prizeOverlay.fx-on .fx-tip{animation: tipIn 1.4s ease-out forwards;}
-#prizeOverlay.fx-on .fx-spark{animation: spark 1.4s ease-out forwards;}
 
-#prizeOverlay .prize-stage{position:relative;width:100%;height:260px;display:grid;place-items:center;margin:0 0 10px;}
-#prizeOverlay .prize-badge{position:absolute;top:10px;left:10px;padding:8px 10px;font-size:12px;color:rgba(255,255,255,.85);background:rgba(0,0,0,.28);border:1px solid rgba(255,255,255,.18);border-radius:999px;backdrop-filter:blur(10px);}
-#prizeOverlay .fx-aura{position:absolute;width:260px;height:260px;border-radius:50%;background:radial-gradient(circle at 50% 50%,rgba(255,210,120,.90) 0%,rgba(255,170,0,.55) 18%,rgba(255,80,0,.20) 38%,rgba(255,80,0,0) 70%);filter:blur(6px);opacity:0;transform:translateY(14px) scale(.75);pointer-events:none;}
-#prizeOverlay .fx-rays{position:absolute;width:300px;height:300px;border-radius:50%;opacity:0;transform:translateY(14px) scale(.75) rotate(0deg);background:repeating-conic-gradient(from 0deg,rgba(255,210,120,.22) 0deg 10deg,rgba(255,210,120,0) 10deg 22deg);mask:radial-gradient(circle at 50% 50%,transparent 0 38%,#000 55%,transparent 76%);filter:blur(.5px);pointer-events:none;}
-#prizeOverlay .fx-spark{position:absolute;width:6px;height:6px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,1),rgba(255,255,255,0));opacity:0;filter:drop-shadow(0 0 10px rgba(255,210,120,.9));pointer-events:none;}
-#prizeOverlay .fx-shadow{position:absolute;bottom:54px;width:90px;height:18px;border-radius:50%;background:rgba(0,0,0,.45);filter:blur(4px);transform:scale(0);opacity:0;pointer-events:none;}
-#prizeOverlay .fx-icon{position:relative;font-size:92px;transform-origin:bottom center;opacity:0;filter:drop-shadow(0 10px 18px rgba(0,0,0,.55)) drop-shadow(0 0 0 rgba(255,210,120,0));z-index:5;}
-#prizeOverlay .fx-tip{position:absolute;bottom:10px;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.7);opacity:0;}
-#prizeOverlay .fx-spark.s1{ left:40px;  top:120px; animation-delay:.35s;}
-#prizeOverlay .fx-spark.s2{ left:80px;  top:70px;  animation-delay:.38s;}
-#prizeOverlay .fx-spark.s3{ left:140px; top:40px;  animation-delay:.40s;}
-#prizeOverlay .fx-spark.s4{ left:210px; top:55px;  animation-delay:.42s;}
-#prizeOverlay .fx-spark.s5{ left:255px; top:100px; animation-delay:.45s;}
-#prizeOverlay .fx-spark.s6{ left:265px; top:160px; animation-delay:.48s;}
-#prizeOverlay .fx-spark.s7{ left:230px; top:210px; animation-delay:.50s;}
-#prizeOverlay .fx-spark.s8{ left:150px; top:235px; animation-delay:.52s;}
-#prizeOverlay .fx-spark.s9{ left:75px;  top:210px; animation-delay:.54s;}
-#prizeOverlay .fx-spark.s10{left:35px;  top:170px; animation-delay:.56s;}
+    /* Prize popup FX (scoped) */
+    #prizeOverlay.fx-on .fx-aura{animation: auraPop 1.4s ease-out forwards;}
+    #prizeOverlay.fx-on .fx-rays{animation: raysPop 1.4s ease-out forwards, raysSpin 7s linear infinite;}
+    #prizeOverlay.fx-on .fx-shadow{animation: shadowBounce 1.4s ease-out forwards;}
+    #prizeOverlay.fx-on .fx-icon{animation: dropBounce 1.4s ease-out forwards;}
+    #prizeOverlay.fx-on .fx-tip{animation: tipIn 1.4s ease-out forwards;}
+    #prizeOverlay.fx-on .fx-spark{animation: spark 1.4s ease-out forwards;}
 
-@keyframes dropBounce{0%{transform:translateY(-340px) scaleY(1);opacity:0;filter:drop-shadow(0 10px 18px rgba(0,0,0,.55));}28%{opacity:1;}40%{transform:translateY(0) scaleY(.70);filter:drop-shadow(0 10px 18px rgba(0,0,0,.55)) drop-shadow(0 0 28px rgba(255,210,120,.55));}55%{transform:translateY(-48px) scaleY(1.05);}70%{transform:translateY(0) scaleY(.84);}82%{transform:translateY(-16px) scaleY(1.02);}92%{transform:translateY(0) scaleY(.95);}100%{transform:translateY(0) scaleY(1);opacity:1;filter:drop-shadow(0 10px 18px rgba(0,0,0,.55)) drop-shadow(0 0 36px rgba(255,210,120,.65));}}
-@keyframes auraPop{0%{opacity:0;transform:translateY(18px) scale(.70);}35%{opacity:.95;transform:translateY(10px) scale(.95);}55%{opacity:1;transform:translateY(6px) scale(1);}100%{opacity:.85;transform:translateY(6px) scale(1.04);}}
-@keyframes raysPop{0%{opacity:0;transform:translateY(18px) scale(.70) rotate(0deg);}45%{opacity:.85;transform:translateY(10px) scale(.98) rotate(0deg);}100%{opacity:.55;transform:translateY(10px) scale(1.06) rotate(0deg);}}
-@keyframes raysSpin{to{transform:translateY(10px) scale(1.06) rotate(360deg);}}
-@keyframes shadowBounce{0%{transform:scale(0);opacity:0;}35%{transform:scale(.25);opacity:0;}40%{transform:scale(1);opacity:.9;}55%{transform:scale(.78);opacity:.55;}70%{transform:scale(.96);opacity:.70;}100%{transform:scale(.90);opacity:.55;}}
-@keyframes spark{0%{opacity:0;transform:scale(.4);}45%{opacity:0;transform:scale(.4);}60%{opacity:1;transform:scale(1.35);}80%{opacity:.9;transform:scale(.95);}100%{opacity:0;transform:scale(1.6);}}
-@keyframes tipIn{0%{opacity:0;transform:translateY(6px);}65%{opacity:0;transform:translateY(6px);}100%{opacity:.85;transform:translateY(0);}}
+    #prizeOverlay .prize-stage{position:relative;width:100%;height:260px;display:grid;place-items:center;margin:0 0 10px;}
+    #prizeOverlay .prize-badge{position:absolute;top:10px;left:10px;padding:8px 10px;font-size:12px;color:rgba(255,255,255,.85);background:rgba(0,0,0,.28);border:1px solid rgba(255,255,255,.18);border-radius:999px;backdrop-filter:blur(10px);}
+    #prizeOverlay .fx-aura{position:absolute;width:260px;height:260px;border-radius:50%;background:radial-gradient(circle at 50% 50%,rgba(255,210,120,.90) 0%,rgba(255,170,0,.55) 18%,rgba(255,80,0,.20) 38%,rgba(255,80,0,0) 70%);filter:blur(6px);opacity:0;transform:translateY(14px) scale(.75);pointer-events:none;}
+    #prizeOverlay .fx-rays{position:absolute;width:300px;height:300px;border-radius:50%;opacity:0;transform:translateY(14px) scale(.75) rotate(0deg);background:repeating-conic-gradient(from 0deg,rgba(255,210,120,.22) 0deg 10deg,rgba(255,210,120,0) 10deg 22deg);mask:radial-gradient(circle at 50% 50%,transparent 0 38%,#000 55%,transparent 76%);filter:blur(.5px);pointer-events:none;}
+    #prizeOverlay .fx-spark{position:absolute;width:6px;height:6px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,1),rgba(255,255,255,0));opacity:0;filter:drop-shadow(0 0 10px rgba(255,210,120,.9));pointer-events:none;}
+    #prizeOverlay .fx-shadow{position:absolute;bottom:54px;width:90px;height:18px;border-radius:50%;background:rgba(0,0,0,.45);filter:blur(4px);transform:scale(0);opacity:0;pointer-events:none;}
+    #prizeOverlay .fx-icon{position:relative;font-size:92px;transform-origin:bottom center;opacity:0;filter:drop-shadow(0 10px 18px rgba(0,0,0,.55)) drop-shadow(0 0 0 rgba(255,210,120,0));z-index:5;}
+    #prizeOverlay .fx-tip{position:absolute;bottom:10px;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.7);opacity:0;}
+    #prizeOverlay .fx-spark.s1{ left:40px;  top:120px; animation-delay:.35s;}
+    #prizeOverlay .fx-spark.s2{ left:80px;  top:70px;  animation-delay:.38s;}
+    #prizeOverlay .fx-spark.s3{ left:140px; top:40px;  animation-delay:.40s;}
+    #prizeOverlay .fx-spark.s4{ left:210px; top:55px;  animation-delay:.42s;}
+    #prizeOverlay .fx-spark.s5{ left:255px; top:100px; animation-delay:.45s;}
+    #prizeOverlay .fx-spark.s6{ left:265px; top:160px; animation-delay:.48s;}
+    #prizeOverlay .fx-spark.s7{ left:230px; top:210px; animation-delay:.50s;}
+    #prizeOverlay .fx-spark.s8{ left:150px; top:235px; animation-delay:.52s;}
+    #prizeOverlay .fx-spark.s9{ left:75px;  top:210px; animation-delay:.54s;}
+    #prizeOverlay .fx-spark.s10{left:35px;  top:170px; animation-delay:.56s;}
 
-/* Wheel glow while spinning (visual only) */
-#wheel{position:relative}
-#wheel.spinning{filter:drop-shadow(0 0 28px rgba(255,215,0,.65)) drop-shadow(0 0 40px rgba(0,198,255,.25));}
-#wheel.spinning::after{content:"";position:absolute;inset:-14px;border-radius:50%;background:radial-gradient(circle at 50% 50%,rgba(255,210,120,.18) 0%,rgba(255,120,0,.10) 35%,rgba(255,120,0,0) 70%);filter:blur(2px);animation:wheelPulse .55s ease-in-out infinite alternate;pointer-events:none;}
-@keyframes wheelPulse{from{transform:scale(.98);opacity:.7}to{transform:scale(1.03);opacity:1}}
+    @keyframes dropBounce{0%{transform:translateY(-340px) scaleY(1);opacity:0;filter:drop-shadow(0 10px 18px rgba(0,0,0,.55));}28%{opacity:1;}40%{transform:translateY(0) scaleY(.70);filter:drop-shadow(0 10px 18px rgba(0,0,0,.55)) drop-shadow(0 0 28px rgba(255,210,120,.55));}55%{transform:translateY(-48px) scaleY(1.05);}70%{transform:translateY(0) scaleY(.84);}82%{transform:translateY(-16px) scaleY(1.02);}92%{transform:translateY(0) scaleY(.95);}100%{transform:translateY(0) scaleY(1);opacity:1;filter:drop-shadow(0 10px 18px rgba(0,0,0,.55)) drop-shadow(0 0 36px rgba(255,210,120,.65));}}
+    @keyframes auraPop{0%{opacity:0;transform:translateY(18px) scale(.70);}35%{opacity:.95;transform:translateY(10px) scale(.95);}55%{opacity:1;transform:translateY(6px) scale(1);}100%{opacity:.85;transform:translateY(6px) scale(1.04);}}
+    @keyframes raysPop{0%{opacity:0;transform:translateY(18px) scale(.70) rotate(0deg);}45%{opacity:.85;transform:translateY(10px) scale(.98) rotate(0deg);}100%{opacity:.55;transform:translateY(10px) scale(1.06) rotate(0deg);}}
+    @keyframes raysSpin{to{transform:translateY(10px) scale(1.06) rotate(360deg);}}
+    @keyframes shadowBounce{0%{transform:scale(0);opacity:0;}35%{transform:scale(.25);opacity:0;}40%{transform:scale(1);opacity:.9;}55%{transform:scale(.78);opacity:.55;}70%{transform:scale(.96);opacity:.70;}100%{transform:scale(.90);opacity:.55;}}
+    @keyframes spark{0%{opacity:0;transform:scale(.4);}45%{opacity:0;transform:scale(.4);}60%{opacity:1;transform:scale(1.35);}80%{opacity:.9;transform:scale(.95);}100%{opacity:0;transform:scale(1.6);}}
+    @keyframes tipIn{0%{opacity:0;transform:translateY(6px);}65%{opacity:0;transform:translateY(6px);}100%{opacity:.85;transform:translateY(0);} }
 
+    /* Wheel glow while spinning (visual only) */
+    #wheel{position:relative}
+    #wheel.spinning{filter:drop-shadow(0 0 28px rgba(255,215,0,.65)) drop-shadow(0 0 40px rgba(0,198,255,.25));}
+    #wheel.spinning::after{content:"";position:absolute;inset:-14px;border-radius:50%;background:radial-gradient(circle at 50% 50%,rgba(255,210,120,.18) 0%,rgba(255,120,0,.10) 35%,rgba(255,120,0,0) 70%);filter:blur(2px);animation:wheelPulse .55s ease-in-out infinite alternate;pointer-events:none;}
+    @keyframes wheelPulse{from{transform:scale(.98);opacity:.7}to{transform:scale(1.03);opacity:1}}
 
+    /* ===== Bulb chase FX around wheel (visual only) ===== */
+    #wheel-container{position:relative}
+    #wheel-container .bulbs{
+      position:absolute;
+      inset:-12px;
+      pointer-events:none;
+      z-index:3;
+    }
+    #wheel-container .bulbs i{
+      position:absolute;
+      width:10px; height:10px;
+      border-radius:50%;
+      background: rgba(255,215,0,.35);
+      box-shadow: 0 0 10px rgba(255,215,0,.20);
+      opacity:.45;
+      transform: translate(-50%,-50%);
+    }
+    #wheel-container.spinning .bulbs i{
+      animation: bulbChase 0.9s linear infinite;
+      opacity:1;
+    }
+    @keyframes bulbChase{
+      0%,100%{ filter: brightness(1); box-shadow: 0 0 10px rgba(255,215,0,.25); opacity:.55; }
+      50%{ filter: brightness(2.2); box-shadow: 0 0 22px rgba(255,215,0,.75), 0 0 40px rgba(255,160,0,.35); opacity:1; }
+    }
+    /* soft backlight behind wheel while spinning */
+    #wheel-container::before{
+      content:"";
+      position:absolute;
+      inset:-24px;
+      border-radius:50%;
+      background: radial-gradient(circle at 50% 50%,
+        rgba(255,210,120,.18) 0%,
+        rgba(0,198,255,.10) 35%,
+        rgba(0,0,0,0) 70%);
+      filter: blur(6px);
+      opacity:0;
+      transform: scale(.92);
+      transition: opacity .2s ease, transform .2s ease;
+      pointer-events:none;
+      z-index:1;
+    }
+    #wheel-container.spinning::before{
+      opacity:1;
+      transform: scale(1.00);
+    }
+  </style>
 
-/* ===== Bulb chase FX around wheel (visual only) ===== */
-#wheel-container{position:relative}
-#wheel-container .bulbs{
-  position:absolute;
-  inset:-12px;
-  pointer-events:none;
-  z-index:3;
-}
-#wheel-container .bulbs i{
-  position:absolute;
-  width:10px; height:10px;
-  border-radius:50%;
-  background: rgba(255,215,0,.35);
-  box-shadow: 0 0 10px rgba(255,215,0,.20);
-  opacity:.45;
-  transform: translate(-50%,-50%);
-}
-#wheel-container.spinning .bulbs i{
-  animation: bulbChase 0.9s linear infinite;
-  opacity:1;
-}
-@keyframes bulbChase{
-  0%,100%{ filter: brightness(1); box-shadow: 0 0 10px rgba(255,215,0,.25); opacity:.55; }
-  50%{ filter: brightness(2.2); box-shadow: 0 0 22px rgba(255,215,0,.75), 0 0 40px rgba(255,160,0,.35); opacity:1; }
-}
-/* soft backlight behind wheel while spinning */
-#wheel-container::before{
-  content:"";
-  position:absolute;
-  inset:-24px;
-  border-radius:50%;
-  background: radial-gradient(circle at 50% 50%,
-    rgba(255,210,120,.18) 0%,
-    rgba(0,198,255,.10) 35%,
-    rgba(0,0,0,0) 70%);
-  filter: blur(6px);
-  opacity:0;
-  transform: scale(.92);
-  transition: opacity .2s ease, transform .2s ease;
-  pointer-events:none;
-  z-index:1;
-}
-#wheel-container.spinning::before{
-  opacity:1;
-  transform: scale(1.00);
-}
-
-</style>
-<script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
-<script>
-  window.OneSignalDeferred = window.OneSignalDeferred || [];
-  OneSignalDeferred.push(async function(OneSignal) {
-    await OneSignal.init({
-      appId: "38b45559-ffdb-43f1-a533-18aa30b3cfac",
+  <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+  <script>
+    window.OneSignalDeferred = window.OneSignalDeferred || [];
+    OneSignalDeferred.push(async function(OneSignal) {
+      await OneSignal.init({
+        appId: "38b45559-ffdb-43f1-a533-18aa30b3cfac",
+      });
     });
-  });
-</script>
+  </script>
 
-<link rel="manifest" href="manifest.webmanifest?v=25">
-<link rel="icon" sizes="192x192" href="icone-192.png">
-<link rel="icon" sizes="512x512" href="icone-512.png">
-<link rel="apple-touch-icon" href="icone-touch-apple.png">
-<meta name="theme-color" content="#02030a">
-
+  <link rel="manifest" href="manifest.webmanifest?v=25">
+  <link rel="icon" sizes="192x192" href="icone-192.png">
+  <link rel="icon" sizes="512x512" href="icone-512.png">
+  <link rel="apple-touch-icon" href="icone-touch-apple.png">
+  <meta name="theme-color" content="#02030a">
 </head>
+
 <body>
   <div class="lang-flag">🇫🇷</div>
   <div class="pointer"></div>
@@ -624,7 +622,7 @@ document.getElementById("btnBad").onclick = () => {
 };
 
 document.getElementById("btnMedium").onclick = () => {
-  
+
   // Moyen -> Google Avis (comme Excellent)
   window.open("https://g.page/r/CeR1XkHseNX9EBM/review", "_blank");
   reviewOverlay.style.display = "none";
@@ -838,16 +836,54 @@ function prizeIconFor(prizeName){
     bulbsHost.appendChild(b);
   }
 })();
-
 </script>
 
+<!-- ✅ SW AUTO-REFRESH (remplace ton ancien register simple) -->
 <script>
-  // PWA: register service worker (required for installability on Chrome Android)
-  if ("serviceWorker" in navigator) {
-    window.addEventListener("load", () => {
-      navigator.serviceWorker.register("./sw.js").catch(() => {});
-    });
-  }
+/**
+ * SW auto-refresh (safe)
+ * - check update régulièrement
+ * - si nouvelle version -> demande skipWaiting
+ * - quand controllerchange -> reload 1 fois
+ */
+(function () {
+  if (!("serviceWorker" in navigator)) return;
+
+  let reloaded = false;
+
+  window.addEventListener("load", async () => {
+    try {
+      const reg = await navigator.serviceWorker.register("./sw.js");
+
+      // Si une version est déjà "waiting"
+      if (reg.waiting) {
+        reg.waiting.postMessage({ type: "SKIP_WAITING" });
+      }
+
+      // Quand une nouvelle version arrive
+      reg.addEventListener("updatefound", () => {
+        const nw = reg.installing;
+        if (!nw) return;
+        nw.addEventListener("statechange", () => {
+          // installée + on avait déjà un SW contrôleur => on force l’activation
+          if (nw.state === "installed" && navigator.serviceWorker.controller) {
+            nw.postMessage({ type: "SKIP_WAITING" });
+          }
+        });
+      });
+
+      // Check update régulier (15s)
+      setInterval(() => reg.update().catch(() => {}), 15000);
+    } catch (e) {}
+  });
+
+  // Quand le nouveau SW prend le contrôle => reload (une seule fois)
+  navigator.serviceWorker.addEventListener("controllerchange", () => {
+    if (reloaded) return;
+    reloaded = true;
+    location.reload();
+  });
+})();
 </script>
 
 </body>
