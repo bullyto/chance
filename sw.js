@@ -1,48 +1,44 @@
-/* sw.js — OneSignal + mise à jour propre (sans boucle) */
+const CACHE_NAME = 'adn66-roue-v2-1';
+const ASSETS = [
+  './',
+  './index.html',
+  './styles.css',
+  './app.js',
+  './config.js',
+  './manifest.webmanifest',
+  './assets/img/logo-apero-de-nuit-66.png',
+  './assets/img/background-night.png',
+  './assets/img/wheel.png',
+  './assets/icons/icon-192.png',
+  './assets/icons/icon-512.png',
+  './assets/rewards/livraison-offerte-1-semaine.png',
+  './assets/rewards/1-tampon-fidelite.png',
+  './assets/rewards/retourner-la-roue.png',
+  './assets/rewards/bon-reduction-10.png',
+  './assets/rewards/2-softs-offerts.png',
+  './assets/rewards/code-promo-adn66-10.png',
+  './assets/rewards/cadeau-surprise.png'
+];
 
-/**
- * Change cette valeur quand tu veux forcer une nouvelle version
- * (ça garantit une différence de fichier => Chrome voit une MAJ)
- */
-const SW_VERSION = "2025-12-23-01";
-
-/**
- * OneSignal SW
- * (obligatoire pour push)
- */
-importScripts("https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.sw.js");
-
-/**
- * Install:
- * - on laisse le SW s’installer normalement
- * - PAS de skipWaiting automatique ici pour éviter les reload loops
- */
-self.addEventListener("install", (event) => {
-  // optionnel: tu peux préchauffer un micro cache si tu veux, mais pas nécessaire
+self.addEventListener('install', event => {
+  event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS)));
+  self.skipWaiting();
 });
 
-/**
- * Activate:
- * - prend le contrôle des pages ouvertes
- */
-self.addEventListener("activate", (event) => {
-  event.waitUntil(self.clients.claim());
+self.addEventListener('activate', event => {
+  event.waitUntil(
+    caches.keys().then(keys => Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k))))
+  );
+  self.clients.claim();
 });
 
-/**
- * Permet à la page (index.html) de demander l’activation immédiate
- * sans attendre que tous les onglets se ferment.
- */
-self.addEventListener("message", (event) => {
-  if (!event || !event.data) return;
-
-  if (event.data.type === "SKIP_WAITING") {
-    self.skipWaiting();
-  }
+self.addEventListener('fetch', event => {
+  if (event.request.method !== 'GET') return;
+  event.respondWith(
+    caches.match(event.request).then(cached => cached || fetch(event.request).then(response => {
+      const clone = response.clone();
+      caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
+      return response;
+    }).catch(() => caches.match('./index.html')))
+  );
 });
-
-/**
- * Petit “marqueur” de version (debug)
- * (ne change rien au fonctionnement, mais aide à vérifier que le fichier bouge)
- */
-self.__SW_VERSION__ = SW_VERSION;
