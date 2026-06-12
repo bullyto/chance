@@ -1,4 +1,4 @@
-const CACHE_NAME = 'adn66-roue-v2-2';
+const CACHE_NAME = 'adn66-roue-v2-axis-3';
 const ASSETS = [
   './',
   './index.html',
@@ -10,8 +10,8 @@ const ASSETS = [
   './assets/img/background-night.png',
   './assets/img/wheel.png',
   './assets/img/wheel-base.png',
-  './assets/img/wheel-pointer.png',
   './assets/img/wheel-center.png',
+  './assets/img/wheel-pointer.png',
   './assets/icons/icon-192.png',
   './assets/icons/icon-512.png',
   './assets/rewards/livraison-offerte-1-semaine.png',
