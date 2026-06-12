@@ -14,7 +14,7 @@
 
   <meta property="og:title" content="Roue de la fortune - Apéro de Nuit 66" />
   <meta property="og:description" content="Jouez et débloquez vos récompenses." />
-  <meta property="og:image" content="./assets/img/wheel.png" />
+  <meta property="og:image" content="./assets/img/wheel-base.png" />
 </head>
 <body>
   <main class="app-shell" aria-label="Roue de la fortune Apéro de Nuit 66">
@@ -27,9 +27,12 @@
       </header>
 
       <section class="wheel-zone" aria-live="polite">
-        <div class="pointer" aria-hidden="true"></div>
         <div class="wheel-light" aria-hidden="true"></div>
-        <img id="wheel" class="wheel" src="./assets/img/wheel.png" alt="Roue des récompenses" draggable="false" />
+        <div class="wheel-stack">
+          <img id="wheel" class="wheel wheel-base" src="./assets/img/wheel-base.png" alt="Roue des récompenses" draggable="false" />
+          <img class="wheel-center" src="./assets/img/wheel-center.png" alt="" aria-hidden="true" draggable="false" />
+          <img class="wheel-pointer" src="./assets/img/wheel-pointer.png" alt="" aria-hidden="true" draggable="false" />
+        </div>
       </section>
 
       <button id="spinButton" class="spin-button" type="button">
