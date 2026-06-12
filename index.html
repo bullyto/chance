@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#07162f" />
-  <meta name="description" content="Roue de la fortune Apéro de Nuit 66 - Jeu & récompenses." />
+  <meta name="description" content="Roue de la fortune Apéro de Nuit 66 - Jeu & récompenses reliés à la carte fidélité." />
 
   <title>Roue de la fortune | Apéro de Nuit 66</title>
 
@@ -13,7 +13,7 @@
   <link rel="stylesheet" href="./styles.css" />
 
   <meta property="og:title" content="Roue de la fortune - Apéro de Nuit 66" />
-  <meta property="og:description" content="Jouez et débloquez vos récompenses." />
+  <meta property="og:description" content="Installez l’application et débloquez votre récompense fidélité." />
   <meta property="og:image" content="./assets/img/wheel-base.png" />
 </head>
 <body>
@@ -23,7 +23,7 @@
         <img class="brand-logo" src="./assets/img/logo-apero-de-nuit-66.png" alt="Apéro de Nuit 66" />
         <div class="game-badge">🎁 Jeu & récompenses</div>
         <h1>Roue de la fortune</h1>
-        <p class="subtitle">Jouez et débloquez vos récompenses</p>
+        <p class="subtitle">Gain relié à votre carte de fidélité</p>
       </header>
 
       <section class="wheel-zone" aria-live="polite">
@@ -39,7 +39,7 @@
         <span>»</span> Tourner la roue <span>«</span>
       </button>
 
-      <p id="statusText" class="status-text">100% gagnant</p>
+      <p id="statusText" class="status-text">Installez l’application pour jouer</p>
 
       <section id="lockedPanel" class="locked-panel hidden">
         <strong>Votre gain est déjà enregistré.</strong>
@@ -49,14 +49,35 @@
     </section>
   </main>
 
-  <div id="reviewOverlay" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="reviewTitle">
-    <div class="modal-card review-card">
-      <img src="./assets/img/logo-apero-de-nuit-66.png" alt="Apéro de Nuit 66" class="modal-logo" />
-      <h2 id="reviewTitle">Avant de tourner la roue</h2>
-      <p>Merci de laisser votre avis Google pour débloquer le jeu.</p>
-      <a id="googleReviewLink" class="primary-link" href="#" target="_blank" rel="noopener">⭐ Laisser mon avis Google</a>
-      <p id="reviewCountdown" class="countdown">Vous pourrez continuer dans 5 secondes...</p>
-      <button id="reviewContinue" class="modal-button" type="button" disabled>Continuer</button>
+  <div id="installOverlay" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="installTitle">
+    <div class="modal-card install-card">
+      <img src="./assets/icons/icon-144.png" alt="Apéro de Nuit 66" class="official-app-icon" />
+      <h2 id="installTitle">Installez l’application</h2>
+      <p>
+        Pour lancer la roue, ouvrez Apéro de Nuit 66 depuis l’application installée.
+        Votre gain sera relié à votre carte de fidélité.
+      </p>
+
+      <div class="trust-row">
+        <span class="trust-dot">✓</span>
+        <span>Application officielle Apéro de Nuit 66</span>
+      </div>
+
+      <a id="playStoreLink" class="primary-link playstore-link" href="#" target="_blank" rel="noopener">
+        ▶ Télécharger sur Google Play
+      </a>
+
+      <button id="installPwaButton" class="modal-button" type="button">
+        Installer cette application
+      </button>
+
+      <button id="alreadyInstalledButton" class="ghost-button install-check-button" type="button">
+        J’ai déjà installé l’application
+      </button>
+
+      <p id="installHelp" class="countdown">
+        Si le bouton d’installation n’apparaît pas, utilisez le menu du navigateur puis “Installer l’application”.
+      </p>
     </div>
   </div>
 
@@ -67,10 +88,19 @@
       <h2 id="resultTitle">Votre récompense</h2>
       <img id="rewardImage" class="reward-image" src="" alt="" />
       <p id="rewardDetail" class="reward-detail"></p>
+
       <div class="code-box">
-        <span>Code à présenter</span>
+        <span>Gain fidélité</span>
         <strong id="rewardCode">ADN66</strong>
       </div>
+
+      <div id="claimBox" class="claim-box hidden">
+        <label for="claimPhone">Téléphone de la carte fidélité</label>
+        <input id="claimPhone" class="claim-input" type="tel" inputmode="tel" autocomplete="tel" placeholder="06 52 33 64 61" />
+        <button id="claimReward" type="button" class="modal-button">Activer sur ma carte</button>
+        <p id="claimStatus" class="claim-status"></p>
+      </div>
+
       <div class="result-actions">
         <button id="copyCode" type="button" class="modal-button">Copier le code</button>
         <a id="orderLink" class="secondary-link" href="https://aperos.net/">Commander</a>

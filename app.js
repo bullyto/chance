@@ -3,8 +3,8 @@
 
   const config = window.ADN66_ROUE_CONFIG;
   const storageKeys = {
-    reviewed: 'adn66_roue_review_done_v2',
-    prize: 'adn66_roue_prize_v2'
+    prize: 'adn66_roue_prize_v3',
+    phone: 'adn66_roue_phone_v3'
   };
 
   const wheel = document.getElementById('wheel');
@@ -14,10 +14,11 @@
   const lockedInfo = document.getElementById('lockedInfo');
   const showSavedPrize = document.getElementById('showSavedPrize');
 
-  const reviewOverlay = document.getElementById('reviewOverlay');
-  const googleReviewLink = document.getElementById('googleReviewLink');
-  const reviewCountdown = document.getElementById('reviewCountdown');
-  const reviewContinue = document.getElementById('reviewContinue');
+  const installOverlay = document.getElementById('installOverlay');
+  const playStoreLink = document.getElementById('playStoreLink');
+  const installPwaButton = document.getElementById('installPwaButton');
+  const alreadyInstalledButton = document.getElementById('alreadyInstalledButton');
+  const installHelp = document.getElementById('installHelp');
 
   const resultOverlay = document.getElementById('resultOverlay');
   const resultTitle = document.getElementById('resultTitle');
@@ -28,13 +29,24 @@
   const copyCode = document.getElementById('copyCode');
   const orderLink = document.getElementById('orderLink');
 
+  const claimBox = document.getElementById('claimBox');
+  const claimPhone = document.getElementById('claimPhone');
+  const claimReward = document.getElementById('claimReward');
+  const claimStatus = document.getElementById('claimStatus');
+
   let isSpinning = false;
   let currentRotation = 0;
   let selectedReward = null;
-  let pendingAfterReview = false;
+  let deferredInstallPrompt = null;
 
-  googleReviewLink.href = config.googleReviewUrl;
+  playStoreLink.href = config.playStoreUrl;
   orderLink.href = config.orderUrl;
+
+  window.addEventListener('beforeinstallprompt', event => {
+    event.preventDefault();
+    deferredInstallPrompt = event;
+    installPwaButton.disabled = false;
+  });
 
   function now() {
     return Date.now();
@@ -46,6 +58,49 @@
 
   function safeParse(value) {
     try { return JSON.parse(value); } catch (_) { return null; }
+  }
+
+  function normalizePhone(phone) {
+    return String(phone || '').replace(/[^0-9+]/g, '').replace(/^\+33/, '0');
+  }
+
+  function isValidPhone(phone) {
+    return /^0[67][0-9]{8}$/.test(normalizePhone(phone));
+  }
+
+  function isRunningAsInstalledApp() {
+    const standalone = window.matchMedia('(display-mode: standalone)').matches;
+    const iosStandalone = window.navigator.standalone === true;
+    const androidSource = config.allowAndroidAppSource && new URLSearchParams(window.location.search).get('source') === 'android_app';
+    return standalone || iosStandalone || androidSource;
+  }
+
+  function showInstallGate() {
+    installOverlay.classList.remove('hidden');
+    statusText.textContent = 'Application requise pour lancer la roue';
+  }
+
+  function refreshInstallState() {
+    if (isRunningAsInstalledApp()) {
+      installOverlay.classList.add('hidden');
+      statusText.textContent = 'Application détectée : vous pouvez jouer';
+      return true;
+    }
+
+    installHelp.textContent = 'L’application n’est pas encore détectée. Ouvrez la roue depuis l’icône installée sur votre téléphone.';
+    return false;
+  }
+
+  async function installPwa() {
+    if (!deferredInstallPrompt) {
+      installHelp.textContent = 'Ouvrez le menu du navigateur puis appuyez sur “Installer l’application”.';
+      return;
+    }
+
+    deferredInstallPrompt.prompt();
+    await deferredInstallPrompt.userChoice;
+    deferredInstallPrompt = null;
+    installHelp.textContent = 'Installation demandée. Ouvrez ensuite la roue depuis l’icône installée.';
   }
 
   function getSavedPrize() {
@@ -68,7 +123,7 @@
     if (!saved) {
       spinButton.disabled = false;
       lockedPanel.classList.add('hidden');
-      statusText.textContent = '100% gagnant';
+      statusText.textContent = isRunningAsInstalledApp() ? '100% gagnant' : 'Installez l’application pour jouer';
       return;
     }
 
@@ -115,7 +170,8 @@
       detail: reward.detail,
       image: reward.image,
       wonAt: now(),
-      expiresAt: now() + daysToMs(config.lockDays)
+      expiresAt: now() + daysToMs(config.lockDays),
+      cloudflareStatus: 'pending'
     };
     localStorage.setItem(storageKeys.prize, JSON.stringify(payload));
     return payload;
@@ -128,49 +184,77 @@
     rewardImage.alt = selectedReward.label;
     rewardDetail.textContent = selectedReward.detail || '';
     rewardCode.textContent = selectedReward.code || 'ADN66';
+
+    const isClaimable = selectedReward.type !== 'spin_again' && selectedReward.id !== 'retourner_la_roue';
+    claimBox.classList.toggle('hidden', !isClaimable);
+    claimStatus.textContent = '';
+    claimReward.disabled = false;
+
+    const savedPhone = localStorage.getItem(storageKeys.phone) || '';
+    if (savedPhone) claimPhone.value = savedPhone;
+
     resultOverlay.classList.remove('hidden');
   }
 
-  function showReviewGate() {
-    pendingAfterReview = true;
-    reviewOverlay.classList.remove('hidden');
-    reviewContinue.disabled = true;
+  async function claimSelectedReward() {
+    if (!selectedReward || selectedReward.type === 'spin_again') return;
 
-    let remaining = Number(config.reviewCountdownSeconds || 5);
-    reviewCountdown.textContent = `Vous pourrez continuer dans ${remaining} secondes...`;
+    const phone = normalizePhone(claimPhone.value);
+    if (!isValidPhone(phone)) {
+      claimStatus.textContent = 'Indiquez un numéro mobile valide lié à votre carte fidélité.';
+      return;
+    }
 
-    const timer = setInterval(() => {
-      remaining -= 1;
-      if (remaining > 0) {
-        reviewCountdown.textContent = `Vous pourrez continuer dans ${remaining} secondes...`;
-        return;
+    localStorage.setItem(storageKeys.phone, phone);
+
+    if (!config.cloudflareClaimUrl) {
+      claimStatus.textContent = 'Gain prêt. Renseignez cloudflareClaimUrl dans config.js pour activer automatiquement dans D1.';
+      return;
+    }
+
+    claimReward.disabled = true;
+    claimStatus.textContent = 'Activation du gain sur votre carte...';
+
+    try {
+      const response = await fetch(config.cloudflareClaimUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          phone,
+          reward_id: selectedReward.id,
+          reward_label: selectedReward.label,
+          reward_code: selectedReward.code,
+          source: 'chance_pwa',
+          user_agent: navigator.userAgent,
+          created_at: new Date().toISOString()
+        })
+      });
+
+      if (!response.ok) throw new Error('HTTP ' + response.status);
+      claimStatus.textContent = 'Gain activé sur votre carte fidélité ✅';
+
+      const saved = getSavedPrize();
+      if (saved) {
+        saved.cloudflareStatus = 'claimed';
+        saved.phone = phone;
+        localStorage.setItem(storageKeys.prize, JSON.stringify(saved));
       }
-
-      clearInterval(timer);
-      reviewCountdown.textContent = 'Vous pouvez maintenant continuer.';
-      reviewContinue.disabled = false;
-    }, 1000);
-  }
-
-  function closeReviewGate() {
-    localStorage.setItem(storageKeys.reviewed, '1');
-    reviewOverlay.classList.add('hidden');
-
-    if (pendingAfterReview) {
-      pendingAfterReview = false;
-      startSpin();
+    } catch (_) {
+      claimReward.disabled = false;
+      claimStatus.textContent = 'Activation impossible pour le moment. Le gain reste affiché sur ce téléphone.';
     }
   }
 
   function startSpin() {
     if (isSpinning) return;
-    if (getSavedPrize()) {
-      applyLockedState();
+
+    if (config.installRequired && !isRunningAsInstalledApp()) {
+      showInstallGate();
       return;
     }
 
-    if (localStorage.getItem(storageKeys.reviewed) !== '1') {
-      showReviewGate();
+    if (getSavedPrize()) {
+      applyLockedState();
       return;
     }
 
@@ -198,8 +282,11 @@
   }
 
   spinButton.addEventListener('click', startSpin);
-  reviewContinue.addEventListener('click', closeReviewGate);
+  installPwaButton.addEventListener('click', installPwa);
+  alreadyInstalledButton.addEventListener('click', refreshInstallState);
   closeResult.addEventListener('click', () => resultOverlay.classList.add('hidden'));
+  claimReward.addEventListener('click', claimSelectedReward);
+
   resultOverlay.addEventListener('click', event => {
     if (event.target === resultOverlay) resultOverlay.classList.add('hidden');
   });
@@ -224,6 +311,11 @@
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('./sw.js').catch(() => {});
     });
+  }
+
+  if (config.installRequired && !isRunningAsInstalledApp()) {
+    spinButton.disabled = false;
+    statusText.textContent = 'Installez l’application pour jouer';
   }
 
   applyLockedState();
