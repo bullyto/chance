@@ -100,7 +100,7 @@
     wheel.classList.remove('spinning');
     void wheel.offsetWidth;
     wheel.classList.add('spinning');
-    wheel.style.transform = `rotate(${currentRotation}deg)`;
+    wheel.style.setProperty('--wheel-rotation', `${currentRotation}deg`);
   }
 
   function normalizeAngle(angle) {
